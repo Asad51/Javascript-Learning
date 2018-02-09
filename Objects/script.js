@@ -140,3 +140,95 @@ function isNumber(num) {
     }
     return true;
 }
+
+//symbol type
+let id = Symbol('id');
+let id2 = Symbol('id'); //different symbols
+console.log(id == id2);
+let user8 = { name: "Asad" };
+user8[id] = "New Id";
+console.log(user8[id]);
+user8[id] = "new value";
+console.log(user8[id]);
+//symbol property are skipped by for in loop
+let user9 = {
+    name: "John",
+    age: 30,
+    [id]: 123
+};
+for (let key in user9) {
+    console.log(user9[key]);
+}
+//global symbols
+let sym = Symbol.for("name");
+let sym2 = Symbol.for("id");
+
+// get name from symbol
+console.log(Symbol.keyFor(sym)); // name
+console.log(Symbol.keyFor(sym2)); // id
+//this keyword
+let user10 = {
+    name: "ASAD",
+    sayHi() { //method shortening
+        console.log("Hello, " + this.name);
+    }
+}
+user10.sayHi();
+
+let user11 = {
+    name: "John",
+    hi() { console.log(this.name); },
+    bye() { console.log("Bye"); }
+};
+
+//user11.hi(); // John (the simple call works)
+
+// now let's call user.hi or user.bye depending on the name
+user11.name == "John" ? user11.hi : user11.bye; // Error!
+
+//arrow function doesn't have own this
+let user12 = {
+    firstName: "Ilya",
+    sayHi() {
+        let arrow = () => console.log(this.firstName);
+        arrow();
+    }
+};
+user12.sayHi(); // Ilya
+
+//toPrimitive
+let user13 = {
+    name: "John",
+    money: 1000,
+
+    [Symbol.toPrimitive](hint) {
+        console.log(`hint: ${hint}`);
+        return hint == "string" ? `{name: "${this.name}"}` : this.money;
+    }
+};
+
+// conversions demo:
+console.log(user13); // hint: string -> {name: "John"}
+console.log(+user13); // hint: number -> 1000
+console.log(user13 + 500); // hint: default -> 1500
+
+//toString/valueof
+let user14 = {
+    name: "John",
+    money: 1000,
+
+    // for hint="string"
+    toString() {
+        return `{name: "${this.name}"}`;
+    },
+
+    // for hint="number" or "default"
+    valueOf() {
+        return this.money;
+    }
+
+};
+
+console.log(user14); // toString -> {name: "John"}
+console.log(+user14); // valueOf -> 1000
+console.log(user14 + 500); // valueOf -> 1500
